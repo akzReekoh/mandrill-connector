@@ -10,7 +10,7 @@ Mandrill Connector Plugin for the Reekoh IoT Platform. Integrates a Reekoh insta
 This plugin sends emails/notifications based on devices' data connected to the Reekoh Instance via Mandrill.
 
 ## Configuration
-To configure this plugin, a Mandrill account is needed to provide the an API Key.
+To configure this plugin, a Mandrill account is needed to provide an API Key.
 
 Other Parameters:
 
