@@ -1,0 +1,28 @@
+{
+  "name": "connector-plugin-seed",
+  "description": "Connector Plugin seed project for the Reekoh IoT Platform. Helps engineers to start developing connector plugins for the Reekoh IoT Platform.",
+  "version": "0.1.1",
+  "author": "Reekoh, Inc.",
+  "main": "app.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Reekoh/connector-plugin-seed"
+  },
+  "dependencies": {
+    "lodash.isempty": "^3.0.4",
+    "lodash.isplainobject": "^3.2.0",
+    "nodemailer": "^1.11.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-cli": "^1.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-json-lint": "^0.1.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
+    "mocha": "^2.3.4"
+  }
+}
