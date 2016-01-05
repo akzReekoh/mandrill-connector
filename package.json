@@ -1,7 +1,7 @@
 {
-  "name": "connector-plugin-seed",
-  "description": "Connector Plugin seed project for the Reekoh IoT Platform. Helps engineers to start developing connector plugins for the Reekoh IoT Platform.",
-  "version": "0.1.1",
+  "name": "mandrill-connector",
+  "description": "Mandrill Connector Plugin for the Reekoh IoT Platform.",
+  "version": "0.1.0",
   "author": "Reekoh, Inc.",
   "main": "app.js",
   "scripts": {
@@ -9,12 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Reekoh/connector-plugin-seed"
+    "url": "https://github.com/Reekoh/mandrill-connector"
   },
   "dependencies": {
     "lodash.isempty": "^3.0.4",
     "lodash.isplainobject": "^3.2.0",
-    "nodemailer": "^1.11.0"
+    "nodemailer": "^1.11.0",
+    "nodemailer-mandrill-transport": "^1.0.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
