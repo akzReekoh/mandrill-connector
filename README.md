@@ -14,10 +14,11 @@ To configure this plugin, a Mandrill account is needed to provide an API Key.
 
 Other Parameters:
 
-1. Default Message - The default message to be sent.
-2. Default Sender - The default sender to be used.
-3. Default Receiver - The default receiver in which the email will be sent.
-4. Default Subject - The default subject to be used.
+1. Default HTML Message - The HTML version of the message to be sent (to be used if the email client supports HTML).
+2. Default Text Message - The Text version of the message to be sent (to be used if the email client does not support HTML).
+3. Default Sender - The default sender to be used.
+4. Default Receiver - The default receiver in which the email will be sent.
+5. Default Subject - The default subject to be used.
 
 These parameters are then injected to the plugin from the platform.
 
