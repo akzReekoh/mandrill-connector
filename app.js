@@ -4,7 +4,7 @@ var platform = require('./platform'),
     isEmpty = require('lodash.isempty'),
     isPlainObject = require('lodash.isplainobject'),
     config,
-	mandrillClient;
+    mandrillClient;
 
 platform.on('data', function (data) {
     if(isPlainObject(data)){
@@ -14,8 +14,11 @@ platform.on('data', function (data) {
         if(isEmpty(data.receiver))
             data.receiver = config.default_receiver;
 
-        if(isEmpty(data.message))
-            data.message = config.default_message;
+        if(isEmpty(data.message_html))
+            data.message = config.default_html_message;
+
+        if(isEmpty(data.message_text))
+            data.message = config.default_text_message;
 
         if(isEmpty(data.subject))
             data.subject = config.default_subject;
@@ -24,7 +27,10 @@ platform.on('data', function (data) {
             from: data.sender,
             to: data.receiver,
             subject: data.subject,
-            html: data.message
+            html: data.message_html,
+            text: data.message_text,
+            cc: data.cc,
+            bcc: data.bcc
         }, function(error, info) {
             if(error) {
                 console.error(error);
@@ -58,6 +64,6 @@ platform.once('ready', function (options) {
         }
     }));
 
-	platform.notifyReady();
-	platform.log('Connector has been initialized.');
+    platform.notifyReady();
+    platform.log('Connector has been initialized.');
 });
