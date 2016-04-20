@@ -8,7 +8,7 @@ var platform = require('./platform'),
     config,
     mandrillClient;
 
-let sendData = (data) => {
+let sendData = (data, callback) => {
     if(isEmpty(data.sender))
         data.sender = config.default_sender;
 
@@ -33,25 +33,30 @@ let sendData = (data) => {
         cc: data.cc,
         bcc: data.bcc
     }, function(error, info) {
-        if(error) {
-            console.error(error);
-            platform.handleException(error);
-        }else{
+        if(!error) {
             platform.log(JSON.stringify({
                 title: 'Mandrill Email sent.',
                 data: data
             }));
         }
+
+        callback(error);
     });
 };
 
 platform.on('data', function (data) {
     if(isPlainObject(data)){
-        sendData(data);
+        sendData(data, (error) => {
+            console.error(error);
+            platform.handleException(error);
+        });
     }
     else if(isArray(data)){
-        async.each(data, (datum) => {
-            sendData(datum);
+        async.each(data, (datum, done) => {
+            sendData(datum, done);
+        }, (error) => {
+            console.error(error);
+            platform.handleException(error);
         });
     }
     else
