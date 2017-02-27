@@ -1,89 +1,95 @@
-'use strict';
+'use strict'
 
-var platform = require('./platform'),
-    isEmpty = require('lodash.isempty'),
-    isPlainObject = require('lodash.isplainobject'),
-    isArray = require('lodash.isarray'),
-    async = require('async'),
-    config,
-    mandrillClient;
+let reekoh = require('reekoh')
+let _plugin = new reekoh.plugins.Connector()
+let async = require('async')
+let isArray = require('lodash.isarray')
+let isEmpty = require('lodash.isempty')
+let isPlainObject = require('lodash.isplainobject')
+let mandrillClient = null
 
 let sendData = (data, callback) => {
-    if(isEmpty(data.sender))
-        data.sender = config.default_sender;
+  if (isEmpty(data.sender)) { data.sender = _plugin.config.defaultSender }
 
-    if(isEmpty(data.receiver))
-        data.receiver = config.default_receiver;
+  if (isEmpty(data.receiver)) {
+    data.receiver = _plugin.config.defaultReceiver
+  }
 
-    if(isEmpty(data.message_html))
-        data.message = config.default_html_message;
+  if (isEmpty(data.messageHtml)) {
+    data.message = _plugin.config.defaultHtmlMessage
+  }
 
-    if(isEmpty(data.message_text))
-        data.message = config.default_text_message;
+  if (isEmpty(data.messageText)) {
+    data.message = _plugin.config.defaultTextMessage
+  }
 
-    if(isEmpty(data.subject))
-        data.subject = config.default_subject;
+  if (isEmpty(data.subject)) {
+    data.subject = _plugin.config.defaultSubject
+  }
 
-    mandrillClient.sendMail({
-        from: data.sender,
-        to: data.receiver,
-        subject: data.subject,
-        html: data.message_html,
-        text: data.message_text,
-        cc: data.cc,
-        bcc: data.bcc
-    }, function(error, info) {
-        if(!error) {
-            platform.log(JSON.stringify({
-                title: 'Mandrill Email sent.',
-                data: data
-            }));
-        }
-
-        callback(error);
-    });
-};
-
-platform.on('data', function (data) {
-    if(isPlainObject(data)){
-        sendData(data, (error) => {
-            if(error) {
-                console.error(error);
-                platform.handleException(error);
-            }
-        });
+  mandrillClient.sendMail({
+    from: data.sender,
+    to: data.receiver,
+    subject: data.subject,
+    html: data.messageHtml,
+    text: data.messageText,
+    cc: data.cc,
+    bcc: data.bcc
+  }, (error) => {
+    if (!error) {
+      _plugin.log(JSON.stringify({
+        title: 'Mandrill Email sent.',
+        data: data
+      }))
     }
-    else if(isArray(data)){
-        async.each(data, (datum, done) => {
-            sendData(datum, done);
-        }, (error) => {
-            if(error) {
-                console.error(error);
-                platform.handleException(error);
-            }
-        });
+
+    callback(error)
+  })
+}
+
+/**
+ * Emitted when device data is received.
+ * This is the event to listen to in order to get real-time data feed from the connected devices.
+ * @param {object} data The data coming from the device represented as JSON Object.
+ */
+_plugin.on('data', (data) => {
+  if (isPlainObject(data)) {
+    sendData(data, (error) => {
+      if (error) {
+        console.error(error)
+        _plugin.logException(error)
+      }
+    })
+  } else if (isArray(data)) {
+    async.each(data, (datum, done) => {
+      sendData(datum, done)
+    }, (error) => {
+      if (error) {
+        console.error(error)
+        _plugin.logException(error)
+      }
+    })
+  } else {
+    _plugin.logException(new Error('Invalid data received. Must be a valid Array/JSON Object. Data ' + data))
+  }
+})
+
+/**
+ * Emitted when the platform bootstraps the plugin. The plugin should listen once and execute its init process.
+ */
+_plugin.once('ready', () => {
+  console.log(_plugin.config)
+  let nodemailer = require('nodemailer')
+  let mandrillTransport = require('nodemailer-mandrill-transport')
+
+  mandrillClient = nodemailer.createTransport(mandrillTransport({
+    auth: {
+      apiKey: _plugin.config.apiKey
     }
-    else
-        platform.handleException(new Error('Invalid data received. Must be a valid Array/JSON Object. Data ' + data));
-});
+  }))
 
-platform.once('close', function () {
-    platform.notifyClose();
-});
+  _plugin.log('Mandrill Connector has been initialized.')
+  _plugin.emit('init')
+})
 
-platform.once('ready', function (options) {
-
-    config = options;
-
-    var nodemailer = require('nodemailer');
-    var mandrillTransport = require('nodemailer-mandrill-transport');
-
-    mandrillClient = nodemailer.createTransport(mandrillTransport({
-        auth: {
-            apiKey: options.api_key
-        }
-    }));
-
-    platform.notifyReady();
-    platform.log('Connector has been initialized.');
-});
+module.exports = _plugin
